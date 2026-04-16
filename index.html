@@ -16,21 +16,55 @@
             font-size: 18px;
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .rank-1 { background-color: #fef3c7; color: #92400e; font-weight: 800; border: 1px solid #fde68a; }
-        .rank-2 { background-color: #f3f4f6; color: #1f2937; font-weight: 800; border: 1px solid #e5e7eb; }
-        .rank-3 { background-color: #ffedd5; color: #9a3412; font-weight: 800; border: 1px solid #fed7aa; }
+        .rank-1 { background-color: #fef3c7; color: #92400e; font-weight: 900; border: 2px solid #fde68a; }
+        .rank-2 { background-color: #f3f4f6; color: #1f2937; font-weight: 900; border: 2px solid #e5e7eb; }
+        .rank-3 { background-color: #ffedd5; color: #9a3412; font-weight: 900; border: 2px solid #fed7aa; }
         .sort-header { cursor: pointer; user-select: none; transition: background-color 0.2s; }
         .sort-header:hover { background-color: #e5e7eb; }
         .tab-active { color: #1e40af; border-bottom: 5px solid #2563eb; }
         
         .page-view { transition: opacity 0.3s ease; }
         .hidden-view { display: none; opacity: 0; }
-        .card-item { transition: transform 0.2s; }
-        .card-item:active { transform: scale(0.98); }
+        
+        /* 多選清單樣式 */
+        .multi-select-box {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 2px solid #f3f4f6;
+            padding: 10px;
+            border-radius: 1.25rem;
+            background: #f9fafb;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .checkbox-item:hover { background: #eff6ff; }
+        .checkbox-item input { width: 22px; height: 22px; cursor: pointer; }
 
-        th { font-size: 1rem !important; }
-        td { font-size: 1.1rem !important; }
-        input[type="number"] { font-size: 1.2rem !important; text-align: center; }
+        th { font-size: 1.1rem !important; }
+        td { font-size: 1.2rem !important; }
+        
+        /* 數值輸入框樣式 */
+        .points-input {
+            width: 100%;
+            padding: 12px 5px;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            text-align: center;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: #1e40af;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .points-input:focus { border-color: #3b82f6; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-900 antialiased">
@@ -42,163 +76,173 @@
                 <div class="flex items-center gap-3">
                     <i class="fas fa-award text-yellow-500 text-3xl"></i>
                     <div class="leading-tight">
-                        <span class="font-black text-blue-900 text-xl block">114 學年度宜蘭縣技藝競賽</span>
+                        <span class="font-black text-blue-900 text-xl block">114 學年度宜蘭縣技藝競賽統計</span>
                         <span class="text-xs text-gray-400 font-bold tracking-tighter uppercase">Skills Competition Dashboard</span>
                     </div>
                 </div>
                 <div class="flex h-full">
-                    <button onclick="switchTab('rank')" id="tab-rank" class="px-6 h-full font-black text-gray-500 hover:text-blue-700 transition flex items-center gap-2 tab-active text-lg">
-                        <i class="fas fa-chart-bar"></i> 積分排行
+                    <button onclick="switchTab('rank')" id="tab-rank" class="px-4 md:px-8 h-full font-black text-gray-500 hover:text-blue-700 transition flex items-center gap-2 tab-active text-lg">
+                        <i class="fas fa-chart-bar"></i> 排行
                     </button>
-                    <button onclick="switchTab('list')" id="tab-list" class="px-6 h-full font-black text-gray-500 hover:text-blue-700 transition flex items-center gap-2 text-lg">
-                        <i class="fas fa-search"></i> 獲獎明細
+                    <button onclick="switchTab('list')" id="tab-list" class="px-4 md:px-8 h-full font-black text-gray-500 hover:text-blue-700 transition flex items-center gap-2 text-lg">
+                        <i class="fas fa-search"></i> 明細
                     </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div class="max-w-5xl mx-auto px-4 py-8 md:py-12">
+    <div class="max-w-6xl mx-auto px-4 py-8 md:py-12">
         
         <!-- 分頁 1: 積分排行頁面 -->
         <section id="view-rank" class="page-view space-y-8">
             <div class="text-center md:text-left">
-                <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">114 學年度學校積分總排行</h2>
-                <p class="text-gray-600 mt-2 text-lg font-medium">基於國民中學技藝教育課程競賽結果，您可以調整下方權重進行排名統計。</p>
+                <h2 class="text-3xl md:text-5xl font-black text-gray-900 tracking-tight">學校積分統計排行</h2>
+                <p class="text-gray-600 mt-3 text-xl font-medium">您可以修改下方積點權重，觀察各校排名之動態變化。</p>
             </div>
 
-            <!-- 自定義積點設定區 -->
-            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-blue-100">
-                <h3 class="text-xl font-black text-blue-800 mb-6 flex items-center gap-2">
-                    <i class="fas fa-sliders-h"></i> 積分權重自定義
+            <!-- 積點設定區 -->
+            <div class="bg-white p-6 md:p-10 rounded-3xl shadow-xl border-4 border-blue-50">
+                <h3 class="text-2xl font-black text-blue-800 mb-8 flex items-center gap-3">
+                    <i class="fas fa-cog"></i> 權重設定 (各名次配分)
                 </h3>
-                <div class="grid grid-cols-4 md:grid-cols-7 gap-3 md:gap-4 mb-6">
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center uppercase">1st</label>
-                        <input type="number" id="pts-1" value="10" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                <div class="grid grid-cols-4 md:grid-cols-7 gap-4 mb-8">
+                    <div class="flex flex-col gap-2 text-center">
+                        <label class="text-xs font-black text-gray-400 uppercase">1st</label>
+                        <input type="number" id="pts-1" value="10" class="points-input">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center uppercase">2nd</label>
-                        <input type="number" id="pts-2" value="8" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    <div class="flex flex-col gap-2 text-center">
+                        <label class="text-xs font-black text-gray-400 uppercase">2nd</label>
+                        <input type="number" id="pts-2" value="8" class="points-input">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center uppercase">3rd</label>
-                        <input type="number" id="pts-3" value="6" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    <div class="flex flex-col gap-2 text-center">
+                        <label class="text-xs font-black text-gray-400 uppercase">3rd</label>
+                        <input type="number" id="pts-3" value="6" class="points-input">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center uppercase">4th</label>
-                        <input type="number" id="pts-4" value="4" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    <div class="flex flex-col gap-2 text-center">
+                        <label class="text-xs font-black text-gray-400 uppercase">4th</label>
+                        <input type="number" id="pts-4" value="4" class="points-input">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center uppercase">5th</label>
-                        <input type="number" id="pts-5" value="3" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    <div class="flex flex-col gap-2 text-center">
+                        <label class="text-xs font-black text-gray-400 uppercase">5th</label>
+                        <input type="number" id="pts-5" value="3" class="points-input">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center uppercase">6th</label>
-                        <input type="number" id="pts-6" value="2" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    <div class="flex flex-col gap-2 text-center">
+                        <label class="text-xs font-black text-gray-400 uppercase">6th</label>
+                        <input type="number" id="pts-6" value="2" class="points-input">
                     </div>
-                    <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center">佳作</label>
-                        <input type="number" id="pts-佳作" value="1" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    <div class="flex flex-col gap-2 text-center">
+                        <label class="text-xs font-black text-gray-400">佳作</label>
+                        <input type="number" id="pts-佳作" value="1" class="points-input">
                     </div>
                 </div>
-                <button onclick="updateRanking()" class="w-full bg-blue-700 text-white py-4 rounded-2xl font-black text-xl hover:bg-blue-800 transition shadow-lg shadow-blue-100 flex items-center justify-center gap-3">
-                    <i class="fas fa-calculator"></i> 更新 114 學年度積分排名
+                <button onclick="updateRanking()" class="w-full bg-blue-700 text-white py-5 rounded-3xl font-black text-2xl hover:bg-blue-800 transition shadow-2xl shadow-blue-200 flex items-center justify-center gap-4">
+                    <i class="fas fa-sync-alt"></i> 更新積分排行
                 </button>
             </div>
 
+            <!-- 數據總結 -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-blue-900 p-8 rounded-3xl shadow-xl text-white flex flex-col items-center justify-center text-center">
-                    <p class="text-sm font-black opacity-60 uppercase tracking-widest mb-1">總積分榜首學校</p>
-                    <p id="top-school-name" class="text-3xl font-black">載入中...</p>
+                    <p class="text-sm font-black opacity-60 uppercase tracking-widest mb-1">積分榜首學校</p>
+                    <p id="top-school-name" class="text-3xl font-black italic">載入中...</p>
                 </div>
                 <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center justify-center text-center">
-                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">本學年度獲獎總人次</p>
+                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">總計獲獎人次</p>
                     <p id="total-students-rank" class="text-3xl font-black text-blue-900">0</p>
                 </div>
             </div>
 
-            <!-- 排行榜清單 -->
-            <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mt-6">
+            <!-- 排行榜 -->
+            <div class="bg-white rounded-[2rem] shadow-2xl border border-gray-200 overflow-hidden mt-10">
                 <div id="school-ranking-full" class="divide-y divide-gray-100">
-                    <!-- 動力生成內容 -->
+                    <!-- JS 自動生成 -->
                 </div>
             </div>
         </section>
 
         <!-- 分頁 2: 獲獎搜尋明細頁面 -->
         <section id="view-list" class="page-view hidden-view space-y-8">
-            <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-10">
-                <h2 class="text-2xl font-black text-gray-800 mb-6 flex items-center gap-3">
-                    <i class="fas fa-search text-blue-600"></i> 名單快速篩選
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="relative">
-                        <i class="fas fa-user-graduate absolute left-4 top-4.5 text-gray-400 text-lg"></i>
-                        <input type="text" id="search-input" placeholder="搜尋學生、職群關鍵字..." 
-                            class="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white transition text-lg outline-none">
-                    </div>
-                    <select id="group-filter" class="w-full px-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white appearance-none cursor-pointer text-lg outline-none font-black text-gray-700">
-                        <option value="all">所有職群</option>
-                    </select>
-                    <select id="school-filter" class="w-full px-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white appearance-none cursor-pointer text-lg outline-none font-black text-gray-700">
-                        <option value="all">所有學校</option>
-                    </select>
-                </div>
-                <div class="mt-6 flex justify-between items-center bg-gray-50 p-4 rounded-xl">
-                    <p class="text-base font-black text-gray-500 tracking-tight">符合條件: <span id="current-count" class="text-blue-700 text-xl mx-1">0</span> 筆</p>
-                    <button onclick="resetFilters()" class="text-sm font-black text-blue-500 hover:text-blue-800 transition flex items-center gap-2 uppercase tracking-widest">
-                        <i class="fas fa-undo"></i> Reset
+            <div class="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-2xl border border-gray-100 mb-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                    <h2 class="text-3xl font-black text-gray-900 flex items-center gap-3">
+                        <i class="fas fa-search-plus text-blue-600"></i> 進階多選搜尋
+                    </h2>
+                    <button onclick="resetFilters()" class="px-8 py-3 bg-gray-100 text-gray-500 rounded-full font-black text-base hover:bg-blue-600 hover:text-white transition">
+                        <i class="fas fa-undo mr-1"></i> 全部重設
                     </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                    <div class="space-y-4">
+                        <label class="text-base font-black text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+                            <i class="fas fa-keyboard text-blue-300"></i> 學生姓名搜尋
+                        </label>
+                        <div class="relative">
+                            <i class="fas fa-user-tag absolute left-4 top-4.5 text-blue-400 text-lg"></i>
+                            <input type="text" id="search-input" placeholder="輸入姓名..." 
+                                class="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white transition text-xl outline-none font-bold shadow-inner">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="text-base font-black text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+                            <i class="fas fa-briefcase text-blue-300"></i> 職群多選
+                        </label>
+                        <div id="group-multi" class="multi-select-box space-y-1 shadow-inner"></div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="text-base font-black text-gray-500 uppercase tracking-widest ml-2 flex items-center gap-2">
+                            <i class="fas fa-school text-blue-300"></i> 學校多選
+                        </label>
+                        <div id="school-multi" class="multi-select-box space-y-1 shadow-inner"></div>
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-10 border-t-2 border-gray-50 space-y-5">
+                    <label class="text-base font-black text-gray-500 uppercase tracking-widest text-center block">名次條件選擇</label>
+                    <div id="rank-multi" class="flex flex-wrap justify-center gap-4"></div>
+                </div>
+
+                <div class="mt-10 bg-blue-50 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-2xl font-black text-blue-900">符合條件: <span id="current-count" class="text-4xl mx-2 text-blue-700">0</span> 筆資料</p>
+                    <div class="text-sm font-black text-blue-400 uppercase tracking-[0.2em] bg-white px-4 py-2 rounded-xl shadow-sm">Multi-Filter Analytics</div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
-                <!-- 電腦版表格 -->
-                <div class="hidden md:block">
+            <!-- 資料列表區 -->
+            <div class="bg-white rounded-[2.5rem] shadow-2xl border border-gray-200 overflow-hidden min-h-[400px]">
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-gray-100 text-gray-500 text-sm font-black uppercase tracking-widest border-b border-gray-200">
-                                <th class="px-8 py-6 sort-header w-32" onclick="setSort('rank')">名次 <i id="sort-rank" class="fas fa-sort ml-2 opacity-40"></i></th>
-                                <th class="px-8 py-6 sort-header" onclick="setSort('name')">姓名 <i id="sort-name" class="fas fa-sort ml-2 opacity-40"></i></th>
-                                <th class="px-8 py-6 sort-header" onclick="setSort('school')">學校 <i id="sort-school" class="fas fa-sort ml-2 opacity-40"></i></th>
-                                <th class="px-8 py-6 sort-header" onclick="setSort('group')">職群 <i id="sort-group" class="fas fa-sort ml-2 opacity-40"></i></th>
+                            <tr class="bg-gray-100 text-gray-400 text-xs font-black uppercase tracking-widest border-b-2 border-gray-200">
+                                <th class="px-8 py-8 sort-header w-40" onclick="setSort('rank')">名次 <i id="sort-rank" class="fas fa-sort ml-2"></i></th>
+                                <th class="px-8 py-8 sort-header" onclick="setSort('name')">獲獎學生 <i id="sort-name" class="fas fa-sort ml-2"></i></th>
+                                <th class="px-8 py-8 sort-header" onclick="setSort('school')">就讀學校 <i id="sort-school" class="fas fa-sort ml-2"></i></th>
+                                <th class="px-8 py-8 sort-header" onclick="setSort('group')">參與職群 <i id="sort-group" class="fas fa-sort ml-2"></i></th>
                             </tr>
                         </thead>
-                        <tbody id="award-list-desktop" class="divide-y divide-gray-100 font-bold text-gray-800">
-                            <!-- 資料列表 -->
-                        </tbody>
+                        <tbody id="award-list-desktop" class="divide-y divide-gray-100 font-bold text-gray-800"></tbody>
                     </table>
                 </div>
 
-                <!-- 手機版清單 -->
-                <div class="md:hidden">
-                    <div class="p-5 bg-gray-50 border-b flex justify-between items-center">
-                        <span class="text-sm font-black text-gray-400 uppercase tracking-widest">114 學年度名單</span>
-                        <div class="flex gap-3">
-                            <button onclick="setSort('rank')" class="text-xs font-black px-3 py-2 bg-white rounded-xl border-2 border-gray-100 shadow-sm">名次 <i id="sort-rank-m" class="fas fa-sort text-blue-500"></i></button>
-                            <button onclick="setSort('school')" class="text-xs font-black px-3 py-2 bg-white rounded-xl border-2 border-gray-100 shadow-sm">學校 <i id="sort-school-m" class="fas fa-sort text-blue-500"></i></button>
-                        </div>
-                    </div>
-                    <div id="award-list-mobile" class="divide-y divide-gray-100">
-                        <!-- 手機版資料卡片 -->
-                    </div>
-                </div>
+                <div id="award-list-mobile" class="md:hidden divide-y divide-gray-100"></div>
 
-                <div id="empty-state" class="hidden py-24 text-center">
-                    <i class="fas fa-search-minus text-gray-200 text-7xl mb-6"></i>
-                    <p class="text-gray-400 text-xl font-black italic">查無資料</p>
+                <div id="empty-state" class="hidden py-40 text-center">
+                    <i class="fas fa-search-minus text-gray-200 text-9xl mb-8"></i>
+                    <p class="text-gray-400 text-2xl font-black italic">找不到相符資料，請調整篩選器</p>
                 </div>
             </div>
         </section>
 
-        <footer class="mt-16 text-center text-xs font-black text-gray-400 uppercase tracking-widest pb-12">
-            宜蘭縣政府教育處 114 學年度國中技藝教育課程技藝競賽資料存檔
+        <footer class="mt-20 text-center text-xs font-black text-gray-400 uppercase tracking-[0.4em] pb-16">
+            宜蘭縣政府教育處 114 學年度國中技藝教育課程技藝競賽數據存檔
         </footer>
     </div>
 
     <script>
-        // 核心數據庫
+        // 資料集
         const data = [
             { school: "國華國中", name: "蕭○宸", rank: "1", group: "電機電子", sub: "電機組" },
             { school: "慈心華德福", name: "鄭○泰", rank: "2", group: "電機電子", sub: "電機組" },
@@ -269,194 +313,236 @@
             { school: "壯圍國中", name: "簡○妘", rank: "6", group: "醫護", sub: "醫護組" }
         ];
 
-        // 狀態變數
-        let activeTab = 'rank';
-        let currentFilter = { text: '', group: 'all', school: 'all' };
+        let currentFilters = { text: '', groups: [], schools: [], ranks: [] };
         let sortConfig = { key: 'rank', direction: 'asc' };
 
-        const views = { rank: document.getElementById('view-rank'), list: document.getElementById('view-list') };
-        const tabs = { rank: document.getElementById('tab-rank'), list: document.getElementById('tab-list') };
+        // 安全更新 textContent 的函數
+        function safeSetText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        }
 
-        // 分頁控制
-        function switchTab(tabId) {
-            activeTab = tabId;
-            Object.keys(views).forEach(k => {
-                views[k].classList.toggle('hidden-view', k !== tabId);
-                tabs[k].classList.toggle('tab-active', k === tabId);
-                tabs[k].classList.toggle('text-gray-500', k !== tabId);
+        // 初始化 UI
+        function init() {
+            const uniqueGroups = [...new Set(data.map(d => d.group))].sort();
+            const uniqueSchools = [...new Set(data.map(d => d.school))].sort();
+            const uniqueRanks = ["1", "2", "3", "4", "5", "6", "佳作"];
+
+            const groupBox = document.getElementById('group-multi');
+            const schoolBox = document.getElementById('school-multi');
+            const rankBox = document.getElementById('rank-multi');
+
+            if(groupBox) groupBox.innerHTML = uniqueGroups.map(g => `
+                <label class="checkbox-item"><input type="checkbox" value="${g}" onchange="toggleFilter('groups', '${g}')"> ${g}</label>
+            `).join('');
+
+            if(schoolBox) schoolBox.innerHTML = uniqueSchools.map(s => `
+                <label class="checkbox-item"><input type="checkbox" value="${s}" onchange="toggleFilter('schools', '${s}')"> ${s}</label>
+            `).join('');
+
+            if(rankBox) rankBox.innerHTML = uniqueRanks.map(r => `
+                <label class="flex items-center gap-2 px-6 py-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-blue-100 transition border-2 border-transparent has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                    <input type="checkbox" value="${r}" onchange="toggleFilter('ranks', '${r}')" class="hidden"> 
+                    <span class="font-black ${getRankTextColor(r)}">${r === '佳作' ? '佳作' : '第 ' + r}</span>
+                </label>
+            `).join('');
+
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) searchInput.addEventListener('input', e => {
+                currentFilters.text = e.target.value;
+                render();
             });
+
+            updateRanking();
+            render();
+        }
+
+        function getRankTextColor(r) {
+            if(r === "1") return "text-yellow-600";
+            if(r === "2") return "text-gray-600 font-bold";
+            if(r === "3") return "text-orange-600";
+            return "text-blue-800";
+        }
+
+        function toggleFilter(type, value) {
+            const index = currentFilters[type].indexOf(value);
+            if (index > -1) currentFilters[type].splice(index, 1);
+            else currentFilters[type].push(value);
+            render();
+        }
+
+        function switchTab(tabId) {
+            const viewRank = document.getElementById('view-rank');
+            const viewList = document.getElementById('view-list');
+            const tabRank = document.getElementById('tab-rank');
+            const tabList = document.getElementById('tab-list');
+
+            if(viewRank) viewRank.classList.toggle('hidden-view', tabId !== 'rank');
+            if(viewList) viewList.classList.toggle('hidden-view', tabId !== 'list');
+            if(tabRank) tabRank.classList.toggle('tab-active', tabId === 'rank');
+            if(tabList) tabList.classList.toggle('tab-active', tabId === 'list');
+            
             if(tabId === 'rank') updateRanking();
             else render();
         }
 
-        // 初始化
-        function init() {
-            const groups = [...new Set(data.map(d => d.group))].sort();
-            const schools = [...new Set(data.map(d => d.school))].sort();
-            const gSel = document.getElementById('group-filter');
-            const sSel = document.getElementById('school-filter');
-
-            groups.forEach(g => gSel.add(new Option(g, g)));
-            schools.forEach(s => sSel.add(new Option(s, s)));
-
-            document.getElementById('search-input').addEventListener('input', e => { currentFilter.text = e.target.value; render(); });
-            gSel.addEventListener('change', e => { currentFilter.group = e.target.value; render(); });
-            sSel.addEventListener('change', e => { currentFilter.school = e.target.value; render(); });
-
-            document.getElementById('total-students-rank').textContent = data.length;
-            updateRanking();
-            updateSortIcons();
-            render();
-        }
-
-        // 積分邏輯
-        function getCustomPoints() {
-            return {
-                "1": parseInt(document.getElementById('pts-1').value) || 0,
-                "2": parseInt(document.getElementById('pts-2').value) || 0,
-                "3": parseInt(document.getElementById('pts-3').value) || 0,
-                "4": parseInt(document.getElementById('pts-4').value) || 0,
-                "5": parseInt(document.getElementById('pts-5').value) || 0,
-                "6": parseInt(document.getElementById('pts-6').value) || 0,
-                "佳作": parseInt(document.getElementById('pts-佳作').value) || 0
-            };
-        }
-
         function updateRanking() {
-            const pointsMap = getCustomPoints();
+            const getPt = (id) => {
+                const el = document.getElementById(id);
+                return el ? (parseInt(el.value) || 0) : 0;
+            }
+
+            const ptsMap = {
+                "1": getPt('pts-1'),
+                "2": getPt('pts-2'),
+                "3": getPt('pts-3'),
+                "4": getPt('pts-4'),
+                "5": getPt('pts-5'),
+                "6": getPt('pts-6'),
+                "佳作": getPt('pts-佳作')
+            };
+            
             const stats = {};
             data.forEach(d => {
-                if(!stats[d.school]) stats[d.school] = { name: d.school, score: 0, gold: 0, count: 0 };
-                stats[d.school].score += pointsMap[d.rank] || 0;
-                stats[d.school].count++;
+                if(!stats[d.school]) stats[d.school] = { name: d.school, score: 0, gold: 0, total: 0 };
+                stats[d.school].score += ptsMap[d.rank] || 0;
+                stats[d.school].total++;
                 if(d.rank === "1") stats[d.school].gold++;
             });
 
             const sorted = Object.values(stats).sort((a,b) => b.score - a.score || b.gold - a.gold);
-            document.getElementById('top-school-name').textContent = sorted[0] ? sorted[0].name : "無資料";
+            
+            safeSetText('top-school-name', sorted[0]?.name || "無數據");
+            safeSetText('total-students-rank', data.length);
 
-            document.getElementById('school-ranking-full').innerHTML = sorted.map((s, idx) => `
-                <div class="p-8 flex items-center justify-between hover:bg-blue-50 transition cursor-pointer" onclick="quickViewSchool('${s.name}')">
+            const rankingBox = document.getElementById('school-ranking-full');
+            if(rankingBox) rankingBox.innerHTML = sorted.map((s, idx) => `
+                <div class="p-8 flex items-center justify-between hover:bg-gray-50 transition cursor-pointer" onclick="quickFilterSchool('${s.name}')">
                     <div class="flex items-center gap-6">
-                        <span class="w-12 h-12 flex items-center justify-center rounded-2xl text-xl font-black ${idx < 3 ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-gray-100 text-gray-400'}">
+                        <span class="w-16 h-16 flex items-center justify-center rounded-3xl text-2xl font-black ${idx < 3 ? 'bg-blue-600 text-white shadow-xl shadow-blue-200' : 'bg-gray-100 text-gray-400'}">
                             ${idx + 1}
                         </span>
                         <div>
-                            <p class="font-black text-gray-900 text-2xl">${s.name}</p>
-                            <p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-tighter">
-                                <span class="text-yellow-600 font-black"><i class="fas fa-crown"></i> ${s.gold} GOLD</span> / ${s.count} AWARDS
+                            <p class="font-black text-gray-900 text-3xl">${s.name}</p>
+                            <p class="text-sm font-bold text-gray-400 mt-2 uppercase tracking-widest">
+                                <span class="text-yellow-600 font-black"><i class="fas fa-crown"></i> ${s.gold} GOLD</span> / ${s.total} AWARDS
                             </p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-4xl font-black text-blue-800">${s.score}</p>
-                        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Points</p>
+                        <p class="text-5xl font-black text-blue-800">${s.score}</p>
+                        <p class="text-xs text-gray-300 font-bold uppercase tracking-[0.2em]">Points</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 明細列表渲染 (包含篩選後的即時排序)
         function render() {
-            // 先篩選
             let filtered = data.filter(d => {
-                const matchT = d.name.includes(currentFilter.text) || d.school.includes(currentFilter.text);
-                const matchG = currentFilter.group === 'all' || d.group === currentFilter.group;
-                const matchS = currentFilter.school === 'all' || d.school === currentFilter.school;
-                return matchT && matchG && matchS;
+                const matchT = d.name.includes(currentFilters.text) || d.group.includes(currentFilters.text);
+                const matchG = currentFilters.groups.length === 0 || currentFilters.groups.includes(d.group);
+                const matchS = currentFilters.schools.length === 0 || currentFilters.schools.includes(d.school);
+                const matchR = currentFilters.ranks.length === 0 || currentFilters.ranks.includes(d.rank);
+                return matchT && matchG && matchS && matchR;
             });
 
-            // 再排序
             filtered.sort((a, b) => {
                 let vA = a[sortConfig.key], vB = b[sortConfig.key];
                 if(sortConfig.key === 'rank') {
-                    const r = (v) => v === '佳作' ? 999 : parseInt(v);
-                    vA = r(vA); vB = r(vB);
+                    const valMap = (v) => v === '佳作' ? 999 : parseInt(v);
+                    vA = valMap(vA); vB = valMap(vB);
                 }
                 if(vA < vB) return sortConfig.direction === 'asc' ? -1 : 1;
                 if(vA > vB) return sortConfig.direction === 'asc' ? 1 : -1;
                 return 0;
             });
 
-            document.getElementById('current-count').textContent = filtered.length;
+            safeSetText('current-count', filtered.length);
+
+            const deskList = document.getElementById('award-list-desktop');
+            const mobList = document.getElementById('award-list-mobile');
+            const emptyState = document.getElementById('empty-state');
 
             if(filtered.length === 0) {
-                document.getElementById('award-list-desktop').innerHTML = document.getElementById('award-list-mobile').innerHTML = '';
-                document.getElementById('empty-state').classList.remove('hidden');
+                if(deskList) deskList.innerHTML = '';
+                if(mobList) mobList.innerHTML = '';
+                if(emptyState) emptyState.classList.remove('hidden');
             } else {
-                document.getElementById('empty-state').classList.add('hidden');
+                if(emptyState) emptyState.classList.add('hidden');
                 
-                document.getElementById('award-list-desktop').innerHTML = filtered.map(d => `
-                    <tr class="hover:bg-gray-50 transition border-b border-gray-50">
-                        <td class="px-8 py-6">
-                            <span class="px-4 py-1 rounded-xl text-xs font-black tracking-widest ${getRankStyle(d.rank)}">
-                                ${d.rank === '佳作' ? '佳作' : '第 ' + d.rank}
-                            </span>
-                        </td>
-                        <td class="px-8 py-6 font-black text-gray-900 text-2xl">${d.name}</td>
-                        <td class="px-8 py-6 text-gray-600 text-xl font-bold">${d.school}</td>
-                        <td class="px-8 py-6">
-                            <span class="font-black text-blue-700 text-base block">${d.group}</span>
-                            <span class="text-xs text-gray-400 font-bold uppercase tracking-tighter">${d.sub}</span>
+                if(deskList) deskList.innerHTML = filtered.map(d => `
+                    <tr class="hover:bg-blue-50/30 transition border-b border-gray-50">
+                        <td class="px-8 py-8"><span class="px-5 py-2 rounded-2xl text-sm font-black tracking-widest ${getRankStyle(d.rank)}">${d.rank === '佳作' ? '佳作' : '第 ' + d.rank}</span></td>
+                        <td class="px-8 py-8 font-black text-gray-900 text-3xl">${d.name}</td>
+                        <td class="px-8 py-8 text-gray-600 text-2xl font-bold">${d.school}</td>
+                        <td class="px-8 py-8">
+                            <span class="font-black text-blue-700 text-xl block">${d.group}</span>
+                            <span class="text-xs text-gray-400 font-bold uppercase">${d.sub}</span>
                         </td>
                     </tr>
                 `).join('');
 
-                document.getElementById('award-list-mobile').innerHTML = filtered.map(d => `
-                    <div class="p-6 card-item bg-white flex items-center justify-between border-b border-gray-50">
-                        <div class="flex items-center gap-5">
-                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-black ${getRankStyle(d.rank)}">
+                if(mobList) mobList.innerHTML = filtered.map(d => `
+                    <div class="p-8 card-item bg-white flex items-center justify-between border-b border-gray-50">
+                        <div class="flex items-center gap-6">
+                            <div class="w-16 h-16 rounded-3xl flex items-center justify-center text-xl font-black ${getRankStyle(d.rank)}">
                                 ${d.rank === '佳作' ? '佳' : d.rank}
                             </div>
                             <div>
-                                <p class="text-xl font-black text-gray-900">${d.name}</p>
-                                <p class="text-sm text-gray-400 font-bold uppercase">${d.school}</p>
+                                <p class="text-2xl font-black text-gray-900">${d.name}</p>
+                                <p class="text-base text-gray-400 font-bold uppercase tracking-widest">${d.school}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm font-black text-blue-600 uppercase tracking-tighter">${d.group}</p>
+                            <p class="text-base font-black text-blue-600 uppercase tracking-tighter">${d.group}</p>
                             <p class="text-xs text-gray-300 font-bold uppercase">${d.sub}</p>
                         </div>
                     </div>
                 `).join('');
             }
+            updateSortIcons();
         }
 
         function setSort(key) {
             if (sortConfig.key === key) sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
             else { sortConfig.key = key; sortConfig.direction = 'asc'; }
-            updateSortIcons();
             render();
         }
 
         function updateSortIcons() {
             ['rank', 'name', 'school', 'group'].forEach(k => {
-                const iconClass = sortConfig.key === k ? `fas fa-sort-${sortConfig.direction === 'asc' ? 'up' : 'down'} text-blue-600 opacity-100` : `fas fa-sort opacity-20`;
                 const dIcon = document.getElementById(`sort-${k}`);
                 const mIcon = document.getElementById(`sort-${k}-m`);
+                const active = sortConfig.key === k;
+                const iconClass = active 
+                    ? `fas fa-sort-${sortConfig.direction === 'asc' ? 'up' : 'down'} ml-2 text-blue-600 opacity-100` 
+                    : `fas fa-sort ml-2 opacity-20`;
                 if(dIcon) dIcon.className = iconClass;
                 if(mIcon) mIcon.className = iconClass;
             });
         }
 
         function getRankStyle(r) {
-            if(r === "1") return "rank-1";
-            if(r === "2") return "rank-2";
-            if(r === "3") return "rank-3";
-            return "bg-blue-50 text-blue-800 border border-blue-100";
+            if(r === "1") return "rank-1 shadow-lg shadow-yellow-100";
+            if(r === "2") return "rank-2 shadow-lg shadow-gray-100";
+            if(r === "3") return "rank-3 shadow-lg shadow-orange-100";
+            return "bg-blue-50 text-blue-800 border-2 border-blue-100";
         }
 
-        function quickViewSchool(school) {
-            currentFilter.school = school;
-            document.getElementById('school-filter').value = school;
+        function quickFilterSchool(school) {
+            resetFilters();
+            currentFilters.schools = [school];
+            document.querySelectorAll('#school-multi input').forEach(input => {
+                if(input.value === school) input.checked = true;
+            });
             switchTab('list');
         }
 
         function resetFilters() {
-            currentFilter = { text: '', group: 'all', school: 'all' };
-            document.getElementById('search-input').value = '';
-            document.getElementById('group-filter').value = 'all';
-            document.getElementById('school-filter').value = 'all';
+            currentFilters = { text: '', groups: [], schools: [], ranks: [] };
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) searchInput.value = '';
+            document.querySelectorAll('input[type="checkbox"]').forEach(i => i.checked = false);
             render();
         }
 
