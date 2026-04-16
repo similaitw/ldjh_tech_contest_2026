@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>115學年度宜蘭縣國中技藝競賽統計</title>
+    <title>114學年度宜蘭縣國中技藝競賽統計</title>
     <!-- 引入 Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Font Awesome 圖標 -->
@@ -13,7 +14,7 @@
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
             -webkit-tap-highlight-color: transparent;
-            font-size: 18px; /* 提高全域基礎字體大小 */
+            font-size: 18px;
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .rank-1 { background-color: #fef3c7; color: #92400e; font-weight: 800; }
@@ -23,17 +24,15 @@
         .sort-header:hover { background-color: #e5e7eb; }
         .tab-active { color: #1e40af; border-bottom: 5px solid #2563eb; }
         
-        /* 動畫轉場 */
         .page-view { transition: opacity 0.3s ease; }
         .hidden-view { display: none; opacity: 0; }
-        
-        /* 卡片轉場 */
         .card-item { transition: transform 0.2s; }
         .card-item:active { transform: scale(0.98); }
 
-        /* 強化表格閱讀性 */
+        /* 強化表格與輸入框 */
         th { font-size: 1rem !important; }
         td { font-size: 1.1rem !important; }
+        input[type="number"] { font-size: 1.2rem !important; text-align: center; }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-900 antialiased">
@@ -44,7 +43,7 @@
             <div class="flex justify-between items-center h-20">
                 <div class="flex items-center gap-3">
                     <i class="fas fa-award text-yellow-500 text-2xl"></i>
-                    <span class="font-black text-blue-900 text-xl hidden sm:block">宜蘭縣 115 技藝競賽統計</span>
+                    <span class="font-black text-blue-900 text-xl hidden sm:block">宜蘭縣 114 技藝競賽統計</span>
                     <span class="font-black text-blue-900 text-lg sm:hidden">技藝競賽統計</span>
                 </div>
                 <div class="flex h-full">
@@ -63,42 +62,66 @@
         
         <!-- 分頁 1: 積分排行頁面 -->
         <section id="view-rank" class="page-view space-y-8">
-            <div class="text-center md:text-left mb-10">
+            <!-- 標題與積點說明 -->
+            <div class="text-center md:text-left">
                 <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">學校年度積分總排行</h2>
-                <p class="text-gray-600 mt-2 text-lg font-medium">依獲獎等第累計點數。第一名 10pt、第二名 8pt、第三名 6pt。</p>
+                <p class="text-gray-600 mt-2 text-lg font-medium">您可以自定義各名次的加權分數，系統將即時更新排名結果。</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- 數據概覽卡片 -->
-                <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center justify-center text-center">
-                    <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 mb-3">
-                        <i class="fas fa-medal text-2xl"></i>
+            <!-- 自定義積點設定區 -->
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-blue-100">
+                <h3 class="text-xl font-black text-blue-800 mb-6 flex items-center gap-2">
+                    <i class="fas fa-cog"></i> 積點規則設定 (各名次配分)
+                </h3>
+                <div class="grid grid-cols-4 md:grid-cols-7 gap-3 md:gap-4 mb-6">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-black text-gray-400 text-center">第1名</label>
+                        <input type="number" id="pts-1" value="10" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
-                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest">目前領先學校</p>
-                    <p id="top-school-name" class="text-2xl font-black text-blue-900 mt-1">載入中...</p>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-black text-gray-400 text-center">第2名</label>
+                        <input type="number" id="pts-2" value="8" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-black text-gray-400 text-center">第3名</label>
+                        <input type="number" id="pts-3" value="6" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-black text-gray-400 text-center">第4名</label>
+                        <input type="number" id="pts-4" value="4" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-black text-gray-400 text-center">第5名</label>
+                        <input type="number" id="pts-5" value="3" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-black text-gray-400 text-center">第6名</label>
+                        <input type="number" id="pts-6" value="2" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-black text-gray-400 text-center">佳作</label>
+                        <input type="number" id="pts-佳作" value="1" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
+                    </div>
+                </div>
+                <button onclick="updateRanking()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-blue-700 transition shadow-lg shadow-blue-100 flex items-center justify-center gap-3">
+                    <i class="fas fa-sync-alt"></i> 更新積點並重新排名
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 數據概覽 -->
+                <div class="bg-blue-900 p-8 rounded-3xl shadow-xl text-white flex flex-col items-center justify-center text-center">
+                    <p class="text-sm font-black opacity-60 uppercase tracking-widest mb-1">積分榜首學校</p>
+                    <p id="top-school-name" class="text-3xl font-black">載入中...</p>
                 </div>
                 <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center justify-center text-center">
-                    <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 mb-3">
-                        <i class="fas fa-users text-2xl"></i>
-                    </div>
-                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest">總計獲獎人數</p>
-                    <p id="total-students-rank" class="text-3xl font-black text-blue-900 mt-1">0</p>
-                </div>
-                <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center justify-center text-center">
-                    <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-3">
-                        <i class="fas fa-layer-group text-2xl"></i>
-                    </div>
-                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest">技藝職群總數</p>
-                    <p class="text-3xl font-black text-blue-900 mt-1">11</p>
+                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">總計獲獎人次</p>
+                    <p id="total-students-rank" class="text-3xl font-black text-blue-900">0</p>
                 </div>
             </div>
 
             <!-- 排行榜清單 -->
-            <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mt-10">
-                <div class="p-6 bg-blue-50 border-b border-blue-100 flex justify-between items-center">
-                    <h3 class="font-black text-blue-900 uppercase tracking-widest text-base">全縣學校排名一覽</h3>
-                    <span class="text-xs bg-blue-700 text-white px-3 py-1 rounded-full font-black tracking-widest">年度統計</span>
-                </div>
+            <div class="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mt-6">
                 <div id="school-ranking-full" class="divide-y divide-gray-100">
                     <!-- 動力生成內容 -->
                 </div>
@@ -107,7 +130,6 @@
 
         <!-- 分頁 2: 獲獎搜尋明細頁面 -->
         <section id="view-list" class="page-view hidden-view space-y-8">
-            <!-- 搜尋與篩選區域 -->
             <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-10">
                 <h2 class="text-2xl font-black text-gray-800 mb-6 flex items-center gap-3">
                     <i class="fas fa-filter text-blue-600"></i> 資料快速搜尋
@@ -173,7 +195,7 @@
         </section>
 
         <footer class="mt-16 text-center text-xs font-black text-gray-400 uppercase tracking-widest pb-12">
-            宜蘭縣政府教育處 115 學年度國中技藝教育課程技藝競賽資料檔
+            宜蘭縣政府教育處 114 學年度國中技藝教育課程技藝競賽資料檔
         </footer>
     </div>
 
@@ -249,14 +271,15 @@
             { school: "壯圍國中", name: "簡○妘", rank: "6", group: "醫護", sub: "醫護組" }
         ];
 
-        const rankPoints = { "1": 10, "2": 8, "3": 6, "4": 4, "5": 3, "6": 2, "佳作": 1 };
-
-        // 狀態變數
+        // 狀態
         let activeTab = 'rank';
         let currentFilter = { text: '', group: 'all', school: 'all' };
         let sortConfig = { key: 'rank', direction: 'asc' };
 
-        // 分頁控制
+        const views = { rank: document.getElementById('view-rank'), list: document.getElementById('view-list') };
+        const tabs = { rank: document.getElementById('tab-rank'), list: document.getElementById('tab-list') };
+
+        // 分頁切換
         function switchTab(tabId) {
             activeTab = tabId;
             Object.keys(views).forEach(k => {
@@ -267,9 +290,6 @@
             if(tabId === 'rank') updateRanking();
             else render();
         }
-
-        const views = { rank: document.getElementById('view-rank'), list: document.getElementById('view-list') };
-        const tabs = { rank: document.getElementById('tab-rank'), list: document.getElementById('tab-list') };
 
         // 初始化
         function init() {
@@ -291,43 +311,56 @@
             render();
         }
 
+        // 獲取目前輸入的積點規則
+        function getCustomPoints() {
+            return {
+                "1": parseInt(document.getElementById('pts-1').value) || 0,
+                "2": parseInt(document.getElementById('pts-2').value) || 0,
+                "3": parseInt(document.getElementById('pts-3').value) || 0,
+                "4": parseInt(document.getElementById('pts-4').value) || 0,
+                "5": parseInt(document.getElementById('pts-5').value) || 0,
+                "6": parseInt(document.getElementById('pts-6').value) || 0,
+                "佳作": parseInt(document.getElementById('pts-佳作').value) || 0
+            };
+        }
+
         // 學校排行榜渲染
         function updateRanking() {
+            const pointsMap = getCustomPoints();
             const stats = {};
             data.forEach(d => {
                 if(!stats[d.school]) stats[d.school] = { name: d.school, score: 0, gold: 0, count: 0 };
-                stats[d.school].score += rankPoints[d.rank] || 0;
+                stats[d.school].score += pointsMap[d.rank] || 0;
                 stats[d.school].count++;
                 if(d.rank === "1") stats[d.school].gold++;
             });
 
-            const sorted = Object.values(stats).sort((a,b) => b.score - a.score);
-            document.getElementById('top-school-name').textContent = sorted[0].name;
+            const sorted = Object.values(stats).sort((a,b) => b.score - a.score || b.gold - a.gold);
+            document.getElementById('top-school-name').textContent = sorted[0] ? sorted[0].name : "無數據";
 
             document.getElementById('school-ranking-full').innerHTML = sorted.map((s, idx) => `
                 <div class="p-8 flex items-center justify-between hover:bg-gray-50 transition cursor-pointer" onclick="quickViewSchool('${s.name}')">
                     <div class="flex items-center gap-6">
-                        <span class="w-10 h-10 flex items-center justify-center rounded-full text-base font-black ${idx < 3 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}">
+                        <span class="w-12 h-12 flex items-center justify-center rounded-2xl text-lg font-black ${idx < 3 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}">
                             ${idx + 1}
                         </span>
                         <div>
                             <p class="font-black text-gray-900 text-xl">${s.name}</p>
-                            <p class="text-xs font-bold text-gray-400 uppercase tracking-tighter mt-1">
-                                <span class="text-yellow-600 font-black"><i class="fas fa-crown"></i> ${s.gold} 金牌</span> / 總計 ${s.count} 人獲獎
+                            <p class="text-sm font-bold text-gray-400 mt-1">
+                                <span class="text-yellow-600 font-black"><i class="fas fa-crown"></i> ${s.gold} 金牌</span> / 總獲獎 ${s.count} 人
                             </p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-3xl font-black text-blue-700">${s.score}</p>
-                        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Points Total</p>
+                        <p class="text-4xl font-black text-blue-700">${s.score}</p>
+                        <p class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Points</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 明細列表渲染 (含排序邏輯)
+        // 明細列表渲染
         function render() {
-            // 1. 先篩選
             let filtered = data.filter(d => {
                 const matchT = d.name.includes(currentFilter.text) || d.school.includes(currentFilter.text);
                 const matchG = currentFilter.group === 'all' || d.group === currentFilter.group;
@@ -335,16 +368,12 @@
                 return matchT && matchG && matchS;
             });
 
-            // 2. 再針對「當前結果」排序
             filtered.sort((a, b) => {
                 let vA = a[sortConfig.key], vB = b[sortConfig.key];
-                
-                // 特別處理名次 (1-6 數字優先於佳作)
                 if(sortConfig.key === 'rank') {
                     const r = (v) => v === '佳作' ? 999 : parseInt(v);
                     vA = r(vA); vB = r(vB);
                 }
-                
                 if(vA < vB) return sortConfig.direction === 'asc' ? -1 : 1;
                 if(vA > vB) return sortConfig.direction === 'asc' ? 1 : -1;
                 return 0;
@@ -358,62 +387,53 @@
             } else {
                 document.getElementById('empty-state').classList.add('hidden');
                 
-                // 電腦版表格
                 document.getElementById('award-list-desktop').innerHTML = filtered.map(d => `
                     <tr class="hover:bg-gray-50 transition border-b border-gray-50">
                         <td class="px-8 py-6">
-                            <span class="px-3 py-1 rounded-lg text-xs font-black tracking-widest ${getRankStyle(d.rank)}">
+                            <span class="px-4 py-1 rounded-xl text-xs font-black tracking-widest ${getRankStyle(d.rank)}">
                                 ${d.rank === '佳作' ? '佳作' : '第 ' + d.rank}
                             </span>
                         </td>
-                        <td class="px-8 py-6 font-black text-gray-900 text-lg">${d.name}</td>
-                        <td class="px-8 py-6 text-gray-600 text-base font-bold">${d.school}</td>
+                        <td class="px-8 py-6 font-black text-gray-900 text-xl">${d.name}</td>
+                        <td class="px-8 py-6 text-gray-600 text-lg font-bold">${d.school}</td>
                         <td class="px-8 py-6">
-                            <span class="font-black text-blue-700 text-sm block">${d.group}</span>
-                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">${d.sub}</span>
+                            <span class="font-black text-blue-700 text-base block">${d.group}</span>
+                            <span class="text-xs text-gray-400 font-bold uppercase">${d.sub}</span>
                         </td>
                     </tr>
                 `).join('');
 
-                // 手機版卡片
                 document.getElementById('award-list-mobile').innerHTML = filtered.map(d => `
-                    <div class="p-5 card-item bg-white flex items-center justify-between border-b border-gray-50">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-black ${getRankStyle(d.rank)}">
+                    <div class="p-6 card-item bg-white flex items-center justify-between border-b border-gray-50">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-black ${getRankStyle(d.rank)}">
                                 ${d.rank === '佳作' ? '佳' : d.rank}
                             </div>
                             <div>
-                                <p class="text-lg font-black text-gray-900">${d.name}</p>
-                                <p class="text-xs text-gray-400 font-bold uppercase tracking-tight">${d.school}</p>
+                                <p class="text-xl font-black text-gray-900">${d.name}</p>
+                                <p class="text-sm text-gray-400 font-bold uppercase">${d.school}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-xs font-black text-blue-600 uppercase tracking-tighter">${d.group}</p>
-                            <p class="text-[10px] text-gray-300 font-bold uppercase">${d.sub}</p>
+                            <p class="text-sm font-black text-blue-600 uppercase tracking-tighter">${d.group}</p>
+                            <p class="text-xs text-gray-300 font-bold uppercase">${d.sub}</p>
                         </div>
                     </div>
                 `).join('');
             }
         }
 
-        // 排序設定切換
+        // 排序設定
         function setSort(key) {
-            if (sortConfig.key === key) {
-                sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
-            } else {
-                sortConfig.key = key;
-                sortConfig.direction = 'asc';
-            }
+            if (sortConfig.key === key) sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+            else { sortConfig.key = key; sortConfig.direction = 'asc'; }
             updateSortIcons();
-            render(); // 重新渲染列表
+            render();
         }
 
         function updateSortIcons() {
             ['rank', 'name', 'school', 'group'].forEach(k => {
-                const iconClass = sortConfig.key === k 
-                    ? `fas fa-sort-${sortConfig.direction === 'asc' ? 'up' : 'down'} text-blue-600 opacity-100` 
-                    : `fas fa-sort opacity-20`;
-                
+                const iconClass = sortConfig.key === k ? `fas fa-sort-${sortConfig.direction === 'asc' ? 'up' : 'down'} text-blue-600 opacity-100` : `fas fa-sort opacity-20`;
                 const dIcon = document.getElementById(`sort-${k}`);
                 const mIcon = document.getElementById(`sort-${k}-m`);
                 if(dIcon) dIcon.className = iconClass;
@@ -422,13 +442,12 @@
         }
 
         function getRankStyle(r) {
-            if(r === "1") return "rank-1";
-            if(r === "2") return "rank-2";
-            if(r === "3") return "rank-3";
+            if(r === "1") return "rank-1 shadow-sm";
+            if(r === "2") return "rank-2 shadow-sm";
+            if(r === "3") return "rank-3 shadow-sm";
             return "bg-blue-50 text-blue-800";
         }
 
-        // 點擊排行榜學校可跳轉並篩選
         function quickViewSchool(school) {
             currentFilter.school = school;
             document.getElementById('school-filter').value = school;
@@ -447,3 +466,5 @@
     </script>
 </body>
 </html>
+
+```
