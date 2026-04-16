@@ -1,0 +1,335 @@
+import React, { useState, useMemo } from 'react';
+import { Search, Filter, Trophy, School, User, PieChart, ChevronDown, ChevronUp } from 'lucide-react';
+
+const competitionData = [
+  // 電機電子職群(電機組)
+  { school: "國華國中", student: "蕭○宸", rank: "1", group: "電機電子", subGroup: "電機組" },
+  { school: "慈心華德福", student: "鄭○泰", rank: "2", group: "電機電子", subGroup: "電機組" },
+  { school: "羅東國中", student: "黃○文", rank: "3", group: "電機電子", subGroup: "電機組" },
+  { school: "東光國中", student: "黃○富", rank: "4", group: "電機電子", subGroup: "電機組" },
+  { school: "人文國中小", student: "張○", rank: "5", group: "電機電子", subGroup: "電機組" },
+  { school: "國華國中", student: "陳○毅", rank: "6", group: "電機電子", subGroup: "電機組" },
+  
+  // 電機電子職群(電子組)
+  { school: "文化國中", student: "林翔", rank: "1", group: "電機電子", subGroup: "電子組" },
+  { school: "羅東國中", student: "林○稷", rank: "2", group: "電機電子", subGroup: "電子組" },
+  { school: "國華國中", student: "連○和", rank: "3", group: "電機電子", subGroup: "電子組" },
+  { school: "中華國中", student: "簡○修", rank: "4", group: "電機電子", subGroup: "電子組" },
+  { school: "冬山國中", student: "潘潔", rank: "5", group: "電機電子", subGroup: "電子組" },
+
+  // 食品職群(西點組)
+  { school: "羅東國中", student: "李○穎", rank: "1", group: "食品", subGroup: "西點組" },
+  { school: "復興國中", student: "蔣○妤", rank: "2", group: "食品", subGroup: "西點組" },
+  { school: "羅東國中", student: "王潔", rank: "3", group: "食品", subGroup: "西點組" },
+  { school: "文化國中", student: "林○臻", rank: "4", group: "食品", subGroup: "西點組" },
+  { school: "宜蘭國中", student: "張○瑄", rank: "5", group: "食品", subGroup: "西點組" },
+  { school: "宜蘭國中", student: "張珮", rank: "6", group: "食品", subGroup: "西點組" },
+  { school: "順安國中", student: "李○齊", rank: "佳作", group: "食品", subGroup: "西點組" },
+  { school: "東光國中", student: "邱○瞳", rank: "佳作", group: "食品", subGroup: "西點組" },
+  { school: "內城國中小", student: "曾○蕙", rank: "佳作", group: "食品", subGroup: "西點組" },
+  { school: "順安國中", student: "鄧婕", rank: "佳作", group: "食品", subGroup: "西點組" },
+
+  // 食品職群(中點組)
+  { school: "中華國中", student: "李○峻", rank: "1", group: "食品", subGroup: "中點組" },
+  { school: "中華國中", student: "楊○慧", rank: "2", group: "食品", subGroup: "中點組" },
+  { school: "順安國中", student: "謝○歆", rank: "3", group: "食品", subGroup: "中點組" },
+  { school: "羅東國中", student: "游○婷", rank: "4", group: "食品", subGroup: "中點組" },
+  { school: "順安國中", student: "謝岑", rank: "5", group: "食品", subGroup: "中點組" },
+  { school: "復興國中", student: "林玲", rank: "6", group: "食品", subGroup: "中點組" },
+  { school: "吳沙國中", student: "張○辰", rank: "佳作", group: "食品", subGroup: "中點組" },
+  { school: "羅東國中", student: "簡○晴", rank: "佳作", group: "食品", subGroup: "中點組" },
+  { school: "國華國中", student: "林○晴", rank: "佳作", group: "食品", subGroup: "中點組" },
+
+  // 設計職群
+  { school: "中華國中", student: "陳○涵", rank: "1", group: "設計", subGroup: "設計組" },
+  { school: "壯圍國中", student: "林庭", rank: "2", group: "設計", subGroup: "設計組" },
+  { school: "壯圍國中", student: "賴○婕", rank: "3", group: "設計", subGroup: "設計組" },
+  { school: "中華國中", student: "李○樂", rank: "3", group: "設計", subGroup: "設計組" },
+
+  // 機械職群
+  { school: "中華國中", student: "陳○煊", rank: "1", group: "機械", subGroup: "機械組" },
+  { school: "羅東國中", student: "顏○祐", rank: "1", group: "機械", subGroup: "製圖組" },
+  { school: "人文國中小", student: "蔡○翰", rank: "2", group: "機械", subGroup: "製圖組" },
+  { school: "國華國中", student: "陳○捷", rank: "3", group: "機械", subGroup: "製圖組" },
+
+  // 動力機械
+  { school: "大同國中", student: "陳○庭", rank: "1", group: "動力機械", subGroup: "動力機械組" },
+  { school: "國華國中", student: "林○陞", rank: "2", group: "動力機械", subGroup: "動力機械組" },
+  { school: "羅東國中", student: "陳○峒", rank: "3", group: "動力機械", subGroup: "動力機械組" },
+
+  // 土木建築
+  { school: "東光國中", student: "陳○羽", rank: "1", group: "土木建築", subGroup: "土木建築組" },
+  { school: "國華國中", student: "林淳", rank: "2", group: "土木建築", subGroup: "土木建築組" },
+  { school: "中華國中", student: "劉廷", rank: "3", group: "土木建築", subGroup: "土木建築組" },
+
+  // 家政職群(美髮組)
+  { school: "壯圍國中", student: "林雨", rank: "1", group: "家政", subGroup: "美髮組" },
+  { school: "凱旋國中", student: "李○晴", rank: "2", group: "家政", subGroup: "美髮組" },
+  { school: "頭城國中", student: "顧○綵", rank: "3", group: "家政", subGroup: "美髮組" },
+  { school: "東光國中", student: "江○綺", rank: "4", group: "家政", subGroup: "美髮組" },
+  { school: "中華國中", student: "唐○姍", rank: "5", group: "家政", subGroup: "美髮組" },
+  { school: "壯圍國中", student: "林○萱", rank: "6", group: "家政", subGroup: "美髮組" },
+  { school: "三星國中", student: "吳○璇", rank: "佳作", group: "家政", subGroup: "美髮組" },
+  { school: "頭城國中", student: "賴○慧", rank: "佳作", group: "家政", subGroup: "美髮組" },
+
+  // 家政職群(美容組)
+  { school: "國華國中", student: "吳婉", rank: "1", group: "家政", subGroup: "美容組" },
+  { school: "礁溪國中", student: "劉○", rank: "2", group: "家政", subGroup: "美容組" },
+  { school: "凱旋國中", student: "陳恩", rank: "3", group: "家政", subGroup: "美容組" },
+  { school: "東光國中", student: "陳○秀", rank: "4", group: "家政", subGroup: "美容組" },
+  { school: "中華國中", student: "施○衣", rank: "5", group: "家政", subGroup: "美容組" },
+  { school: "五結國中", student: "林○瑩", rank: "6", group: "家政", subGroup: "美容組" },
+
+  // 餐旅職群
+  { school: "頭城國中", student: "林○雯", rank: "1", group: "餐旅", subGroup: "餐旅組" },
+  { school: "頭城國中", student: "胡琳", rank: "2", group: "餐旅", subGroup: "餐旅組" },
+  { school: "內城國中小", student: "游○晴", rank: "3", group: "餐旅", subGroup: "餐旅組" },
+  { school: "頭城國中", student: "莊○琳", rank: "4", group: "餐旅", subGroup: "餐旅組" },
+  { school: "頭城國中", student: "林○陞", rank: "5", group: "餐旅", subGroup: "餐旅組" },
+  { school: "壯圍國中", student: "游 毅", rank: "6", group: "餐旅", subGroup: "餐旅組" },
+  { school: "三星國中", student: "田○柔", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "三星國中", student: "游○萱", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "壯圍國中", student: "劉○齊", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "員山國中", student: "游歆", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "順安國中", student: "曾怡", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "頭城國中", student: "簡○愛", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "員山國中", student: "陳○榆", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "羅東國中", student: "游○薇", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "羅東國中", student: "游紜", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "凱旋國中", student: "林志", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "凱旋國中", student: "陳○愷", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "礁溪國中", student: "王○峻", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+  { school: "復興國中", student: "林○祐", rank: "佳作", group: "餐旅", subGroup: "餐旅組" },
+
+  // 商管職群
+  { school: "吳沙國中", student: "翁○原", rank: "1", group: "商管", subGroup: "商管組" },
+  { school: "吳沙國中", student: "周○瑤", rank: "2", group: "商管", subGroup: "商管組" },
+  { school: "吳沙國中", student: "黃○婕", rank: "3", group: "商管", subGroup: "商管組" },
+
+  // 農業職群
+  { school: "文化國中", student: "賴○蒨", rank: "1", group: "農業", subGroup: "農業組" },
+  { school: "東光國中", student: "林○豈", rank: "2", group: "農業", subGroup: "農業組" },
+  { school: "東光國中", student: "莊○晴", rank: "3", group: "農業", subGroup: "農業組" },
+
+  // 醫護職群
+  { school: "壯圍國中", student: "朱恩", rank: "1", group: "醫護", subGroup: "醫護組" },
+  { school: "順安國中", student: "賴○羽", rank: "2", group: "醫護", subGroup: "醫護組" },
+  { school: "東光國中", student: "林妤", rank: "3", group: "醫護", subGroup: "醫護組" },
+  { school: "壯圍國中", student: "黃○旭", rank: "4", group: "醫護", subGroup: "醫護組" },
+  { school: "岳明國中小", student: "許○羚", rank: "5", group: "醫護", subGroup: "醫護組" },
+  { school: "壯圍國中", student: "簡○妘", rank: "6", group: "醫護", subGroup: "醫護組" },
+  { school: "凱旋國中", student: "盧霖", rank: "佳作", group: "醫護", subGroup: "醫護組" },
+  { school: "中華國中", student: "呂恩", rank: "佳作", group: "醫護", subGroup: "醫護組" },
+  { school: "羅東國中", student: "魏○萌", rank: "佳作", group: "醫護", subGroup: "醫護組" },
+  { school: "文化國中", student: "蔡○嬉", rank: "佳作", group: "醫護", subGroup: "醫護組" },
+  { school: "羅東國中", student: "松靜", rank: "佳作", group: "醫護", subGroup: "醫護組" },
+  { school: "復興國中", student: "李○蓁", rank: "佳作", group: "醫護", subGroup: "醫護組" },
+  { school: "復興國中", student: "游○瑄", rank: "佳作", group: "醫護", subGroup: "醫護組" }
+];
+
+const rankPoints = {
+  "1": 10,
+  "2": 8,
+  "3": 6,
+  "4": 4,
+  "5": 3,
+  "6": 2,
+  "佳作": 1
+};
+
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSchool, setSelectedSchool] = useState("all");
+  const [selectedGroup, setSelectedGroup] = useState("all");
+  const [sortBy, setSortBy] = useState("points"); // "points" or "awards"
+
+  const schools = useMemo(() => Array.from(new Set(competitionData.map(d => d.school))).sort(), []);
+  const groups = useMemo(() => Array.from(new Set(competitionData.map(d => d.group))).sort(), []);
+
+  const schoolStats = useMemo(() => {
+    const stats = {};
+    competitionData.forEach(item => {
+      if (!stats[item.school]) {
+        stats[item.school] = {
+          name: item.school,
+          totalPoints: 0,
+          gold: 0,
+          silver: 0,
+          bronze: 0,
+          others: 0,
+          totalAwards: 0
+        };
+      }
+      stats[item.school].totalPoints += rankPoints[item.rank] || 0;
+      stats[item.school].totalAwards += 1;
+      if (item.rank === "1") stats[item.school].gold += 1;
+      else if (item.rank === "2") stats[item.school].silver += 1;
+      else if (item.rank === "3") stats[item.school].bronze += 1;
+      else stats[item.school].others += 1;
+    });
+    return Object.values(stats).sort((a, b) => {
+      if (sortBy === "points") return b.totalPoints - a.totalPoints;
+      return b.totalAwards - a.totalAwards;
+    });
+  }, [sortBy]);
+
+  const filteredData = useMemo(() => {
+    return competitionData.filter(item => {
+      const matchSearch = item.student.includes(searchTerm) || item.school.includes(searchTerm);
+      const matchSchool = selectedSchool === "all" || item.school === selectedSchool;
+      const matchGroup = selectedGroup === "all" || item.group === selectedGroup;
+      return matchSearch && matchSchool && matchGroup;
+    });
+  }, [searchTerm, selectedSchool, selectedGroup]);
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        <header className="mb-8 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-blue-800 flex items-center justify-center md:justify-start gap-2">
+              <Trophy className="text-yellow-500" />
+              宜蘭縣 114 學年度國中技藝競賽統計
+            </h1>
+            <p className="text-gray-500 mt-2 italic">技術傳承．卓越競爭 - 完整獲獎名單數據分析</p>
+          </div>
+          <div className="bg-white p-2 rounded-lg shadow-sm border text-sm inline-flex gap-4">
+            <span className="flex items-center gap-1 text-blue-600"><div className="w-3 h-3 bg-yellow-400 rounded-full" />第 1 名: 10 pt</span>
+            <span className="flex items-center gap-1 text-blue-600"><div className="w-3 h-3 bg-gray-300 rounded-full" />第 2 名: 8 pt</span>
+            <span className="flex items-center gap-1 text-blue-600"><div className="w-3 h-3 bg-orange-400 rounded-full" />第 3 名: 6 pt</span>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 側邊欄：校際排名 */}
+          <div className="lg:col-span-1 space-y-4">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+              <div className="p-4 bg-blue-600 text-white flex justify-between items-center">
+                <h2 className="font-bold flex items-center gap-2">
+                  <PieChart size={18} />
+                  校際積分排行榜
+                </h2>
+                <button 
+                  onClick={() => setSortBy(sortBy === "points" ? "awards" : "points")}
+                  className="text-xs bg-blue-700 px-2 py-1 rounded hover:bg-blue-800 transition"
+                >
+                  切換依{sortBy === "points" ? "獎項數" : "積分"}排序
+                </button>
+              </div>
+              <div className="max-h-[600px] overflow-y-auto scrollbar-hide">
+                {schoolStats.map((school, index) => (
+                  <div key={school.name} 
+                    className={`p-3 border-b hover:bg-blue-50 cursor-pointer transition flex items-center gap-3 ${selectedSchool === school.name ? 'bg-blue-50 border-l-4 border-l-blue-600' : ''}`}
+                    onClick={() => setSelectedSchool(selectedSchool === school.name ? "all" : school.name)}
+                  >
+                    <div className="w-8 text-center font-bold text-gray-400">
+                      {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-gray-800">{school.name}</div>
+                      <div className="flex gap-1 mt-1">
+                        {[...Array(school.gold)].map((_, i) => <div key={i} className="w-2 h-2 rounded-full bg-yellow-400" />)}
+                        {[...Array(school.silver)].map((_, i) => <div key={i} className="w-2 h-2 rounded-full bg-gray-300" />)}
+                        {[...Array(school.bronze)].map((_, i) => <div key={i} className="w-2 h-2 rounded-full bg-orange-400" />)}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-black text-blue-700">{school.totalPoints}</div>
+                      <div className="text-[10px] text-gray-400 uppercase font-bold">Points</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 主要區域：詳細數據與篩選 */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white p-4 rounded-xl shadow-md border border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="搜尋姓名或學校..." 
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="relative">
+                <School className="absolute left-3 top-3 text-gray-400" size={18} />
+                <select 
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  value={selectedSchool}
+                  onChange={(e) => setSelectedSchool(e.target.value)}
+                >
+                  <option value="all">所有學校</option>
+                  {schools.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div className="relative">
+                <Filter className="absolute left-3 top-3 text-gray-400" size={18} />
+                <select 
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  value={selectedGroup}
+                  onChange={(e) => setSelectedGroup(e.target.value)}
+                >
+                  <option value="all">所有職群</option>
+                  {groups.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-100 text-gray-600 uppercase text-xs font-bold tracking-wider">
+                    <th className="px-6 py-4">名次</th>
+                    <th className="px-6 py-4">獲獎者</th>
+                    <th className="px-6 py-4">學校</th>
+                    <th className="px-6 py-4">職群 / 組別</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredData.length > 0 ? filteredData.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 rounded-full text-sm font-bold inline-block w-12 text-center
+                          ${item.rank === "1" ? "bg-yellow-100 text-yellow-700" : 
+                            item.rank === "2" ? "bg-gray-100 text-gray-600" : 
+                            item.rank === "3" ? "bg-orange-100 text-orange-700" : 
+                            "bg-blue-50 text-blue-600"}`}>
+                          {item.rank === "佳作" ? "佳作" : `第 ${item.rank}`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-semibold text-gray-800 flex items-center gap-2">
+                        <User size={14} className="text-gray-400" />
+                        {item.student}
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">{item.school}</td>
+                      <td className="px-6 py-4">
+                        <span className="text-xs font-medium px-2 py-0.5 bg-blue-50 text-blue-700 rounded mr-2">{item.group}</span>
+                        <span className="text-xs text-gray-400">{item.subGroup}</span>
+                      </td>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-12 text-center text-gray-400 italic">
+                        查無符合篩選條件的獲獎資料
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              <div className="bg-gray-50 px-6 py-4 text-xs text-gray-400">
+                顯示共 {filteredData.length} 筆獲獎紀錄
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
