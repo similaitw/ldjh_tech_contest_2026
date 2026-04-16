@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>114學年度宜蘭縣國中技藝競賽統計</title>
+    <title>114學年度宜蘭縣國中技藝競賽統計儀表板</title>
     <!-- 引入 Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Font Awesome 圖標 -->
@@ -16,9 +16,9 @@
             font-size: 18px;
         }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .rank-1 { background-color: #fef3c7; color: #92400e; font-weight: 800; }
-        .rank-2 { background-color: #f3f4f6; color: #1f2937; font-weight: 800; }
-        .rank-3 { background-color: #ffedd5; color: #9a3412; font-weight: 800; }
+        .rank-1 { background-color: #fef3c7; color: #92400e; font-weight: 800; border: 1px solid #fde68a; }
+        .rank-2 { background-color: #f3f4f6; color: #1f2937; font-weight: 800; border: 1px solid #e5e7eb; }
+        .rank-3 { background-color: #ffedd5; color: #9a3412; font-weight: 800; border: 1px solid #fed7aa; }
         .sort-header { cursor: pointer; user-select: none; transition: background-color 0.2s; }
         .sort-header:hover { background-color: #e5e7eb; }
         .tab-active { color: #1e40af; border-bottom: 5px solid #2563eb; }
@@ -28,7 +28,6 @@
         .card-item { transition: transform 0.2s; }
         .card-item:active { transform: scale(0.98); }
 
-        /* 強化表格與輸入框 */
         th { font-size: 1rem !important; }
         td { font-size: 1.1rem !important; }
         input[type="number"] { font-size: 1.2rem !important; text-align: center; }
@@ -41,9 +40,11 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-20">
                 <div class="flex items-center gap-3">
-                    <i class="fas fa-award text-yellow-500 text-2xl"></i>
-                    <span class="font-black text-blue-900 text-xl hidden sm:block">宜蘭縣 114 技藝競賽統計</span>
-                    <span class="font-black text-blue-900 text-lg sm:hidden">技藝競賽統計</span>
+                    <i class="fas fa-award text-yellow-500 text-3xl"></i>
+                    <div class="leading-tight">
+                        <span class="font-black text-blue-900 text-xl block">114 學年度宜蘭縣技藝競賽</span>
+                        <span class="text-xs text-gray-400 font-bold tracking-tighter uppercase">Skills Competition Dashboard</span>
+                    </div>
                 </div>
                 <div class="flex h-full">
                     <button onclick="switchTab('rank')" id="tab-rank" class="px-6 h-full font-black text-gray-500 hover:text-blue-700 transition flex items-center gap-2 tab-active text-lg">
@@ -61,40 +62,39 @@
         
         <!-- 分頁 1: 積分排行頁面 -->
         <section id="view-rank" class="page-view space-y-8">
-            <!-- 標題與積點說明 -->
             <div class="text-center md:text-left">
-                <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">學校年度積分總排行</h2>
-                <p class="text-gray-600 mt-2 text-lg font-medium">您可以自定義各名次的加權分數，系統將即時更新排名結果。</p>
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">114 學年度學校積分總排行</h2>
+                <p class="text-gray-600 mt-2 text-lg font-medium">基於國民中學技藝教育課程競賽結果，您可以調整下方權重進行排名統計。</p>
             </div>
 
             <!-- 自定義積點設定區 -->
             <div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-blue-100">
                 <h3 class="text-xl font-black text-blue-800 mb-6 flex items-center gap-2">
-                    <i class="fas fa-cog"></i> 積點規則設定 (各名次配分)
+                    <i class="fas fa-sliders-h"></i> 積分權重自定義
                 </h3>
                 <div class="grid grid-cols-4 md:grid-cols-7 gap-3 md:gap-4 mb-6">
                     <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center">第1名</label>
+                        <label class="text-xs font-black text-gray-400 text-center uppercase">1st</label>
                         <input type="number" id="pts-1" value="10" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center">第2名</label>
+                        <label class="text-xs font-black text-gray-400 text-center uppercase">2nd</label>
                         <input type="number" id="pts-2" value="8" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center">第3名</label>
+                        <label class="text-xs font-black text-gray-400 text-center uppercase">3rd</label>
                         <input type="number" id="pts-3" value="6" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center">第4名</label>
+                        <label class="text-xs font-black text-gray-400 text-center uppercase">4th</label>
                         <input type="number" id="pts-4" value="4" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center">第5名</label>
+                        <label class="text-xs font-black text-gray-400 text-center uppercase">5th</label>
                         <input type="number" id="pts-5" value="3" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
                     <div class="flex flex-col gap-1">
-                        <label class="text-xs font-black text-gray-400 text-center">第6名</label>
+                        <label class="text-xs font-black text-gray-400 text-center uppercase">6th</label>
                         <input type="number" id="pts-6" value="2" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
                     <div class="flex flex-col gap-1">
@@ -102,19 +102,18 @@
                         <input type="number" id="pts-佳作" value="1" class="w-full py-2 border-2 border-gray-100 rounded-xl bg-gray-50 focus:border-blue-500 outline-none">
                     </div>
                 </div>
-                <button onclick="updateRanking()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg hover:bg-blue-700 transition shadow-lg shadow-blue-100 flex items-center justify-center gap-3">
-                    <i class="fas fa-sync-alt"></i> 更新積點並重新排名
+                <button onclick="updateRanking()" class="w-full bg-blue-700 text-white py-4 rounded-2xl font-black text-xl hover:bg-blue-800 transition shadow-lg shadow-blue-100 flex items-center justify-center gap-3">
+                    <i class="fas fa-calculator"></i> 更新 114 學年度積分排名
                 </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 數據概覽 -->
                 <div class="bg-blue-900 p-8 rounded-3xl shadow-xl text-white flex flex-col items-center justify-center text-center">
-                    <p class="text-sm font-black opacity-60 uppercase tracking-widest mb-1">積分榜首學校</p>
+                    <p class="text-sm font-black opacity-60 uppercase tracking-widest mb-1">總積分榜首學校</p>
                     <p id="top-school-name" class="text-3xl font-black">載入中...</p>
                 </div>
                 <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 flex flex-col items-center justify-center text-center">
-                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">總計獲獎人次</p>
+                    <p class="text-sm font-black text-gray-400 uppercase tracking-widest mb-1">本學年度獲獎總人次</p>
                     <p id="total-students-rank" class="text-3xl font-black text-blue-900">0</p>
                 </div>
             </div>
@@ -131,25 +130,25 @@
         <section id="view-list" class="page-view hidden-view space-y-8">
             <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-10">
                 <h2 class="text-2xl font-black text-gray-800 mb-6 flex items-center gap-3">
-                    <i class="fas fa-filter text-blue-600"></i> 資料快速搜尋
+                    <i class="fas fa-search text-blue-600"></i> 名單快速篩選
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="relative">
-                        <i class="fas fa-search absolute left-4 top-4.5 text-gray-400 text-lg"></i>
-                        <input type="text" id="search-input" placeholder="搜尋學生姓名、學校..." 
+                        <i class="fas fa-user-graduate absolute left-4 top-4.5 text-gray-400 text-lg"></i>
+                        <input type="text" id="search-input" placeholder="搜尋學生、職群關鍵字..." 
                             class="w-full pl-12 pr-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white transition text-lg outline-none">
                     </div>
-                    <select id="group-filter" class="w-full px-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white appearance-none cursor-pointer text-lg outline-none font-medium">
+                    <select id="group-filter" class="w-full px-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white appearance-none cursor-pointer text-lg outline-none font-black text-gray-700">
                         <option value="all">所有職群</option>
                     </select>
-                    <select id="school-filter" class="w-full px-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white appearance-none cursor-pointer text-lg outline-none font-medium">
+                    <select id="school-filter" class="w-full px-4 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:border-blue-500 focus:bg-white appearance-none cursor-pointer text-lg outline-none font-black text-gray-700">
                         <option value="all">所有學校</option>
                     </select>
                 </div>
                 <div class="mt-6 flex justify-between items-center bg-gray-50 p-4 rounded-xl">
-                    <p class="text-base font-black text-gray-500 italic">符合條件: <span id="current-count" class="text-blue-700 text-xl mx-1">0</span> 筆</p>
-                    <button onclick="resetFilters()" class="text-sm font-black text-blue-500 hover:text-blue-800 transition flex items-center gap-2">
-                        <i class="fas fa-undo-alt"></i> 重設所有篩選
+                    <p class="text-base font-black text-gray-500 tracking-tight">符合條件: <span id="current-count" class="text-blue-700 text-xl mx-1">0</span> 筆</p>
+                    <button onclick="resetFilters()" class="text-sm font-black text-blue-500 hover:text-blue-800 transition flex items-center gap-2 uppercase tracking-widest">
+                        <i class="fas fa-undo"></i> Reset
                     </button>
                 </div>
             </div>
@@ -161,12 +160,12 @@
                         <thead>
                             <tr class="bg-gray-100 text-gray-500 text-sm font-black uppercase tracking-widest border-b border-gray-200">
                                 <th class="px-8 py-6 sort-header w-32" onclick="setSort('rank')">名次 <i id="sort-rank" class="fas fa-sort ml-2 opacity-40"></i></th>
-                                <th class="px-8 py-6 sort-header" onclick="setSort('name')">獲獎學生 <i id="sort-name" class="fas fa-sort ml-2 opacity-40"></i></th>
-                                <th class="px-8 py-6 sort-header" onclick="setSort('school')">就讀學校 <i id="sort-school" class="fas fa-sort ml-2 opacity-40"></i></th>
-                                <th class="px-8 py-6 sort-header" onclick="setSort('group')">參與職群 <i id="sort-group" class="fas fa-sort ml-2 opacity-40"></i></th>
+                                <th class="px-8 py-6 sort-header" onclick="setSort('name')">姓名 <i id="sort-name" class="fas fa-sort ml-2 opacity-40"></i></th>
+                                <th class="px-8 py-6 sort-header" onclick="setSort('school')">學校 <i id="sort-school" class="fas fa-sort ml-2 opacity-40"></i></th>
+                                <th class="px-8 py-6 sort-header" onclick="setSort('group')">職群 <i id="sort-group" class="fas fa-sort ml-2 opacity-40"></i></th>
                             </tr>
                         </thead>
-                        <tbody id="award-list-desktop" class="divide-y divide-gray-100 font-medium text-gray-800">
+                        <tbody id="award-list-desktop" class="divide-y divide-gray-100 font-bold text-gray-800">
                             <!-- 資料列表 -->
                         </tbody>
                     </table>
@@ -175,10 +174,10 @@
                 <!-- 手機版清單 -->
                 <div class="md:hidden">
                     <div class="p-5 bg-gray-50 border-b flex justify-between items-center">
-                        <span class="text-sm font-black text-gray-500 uppercase tracking-widest">獲獎詳細清單</span>
+                        <span class="text-sm font-black text-gray-400 uppercase tracking-widest">114 學年度名單</span>
                         <div class="flex gap-3">
-                            <button onclick="setSort('rank')" class="text-xs font-black px-3 py-2 bg-white rounded-xl border-2 border-gray-100 shadow-sm">名次 <i id="sort-rank-m" class="fas fa-sort ml-1 text-blue-500"></i></button>
-                            <button onclick="setSort('school')" class="text-xs font-black px-3 py-2 bg-white rounded-xl border-2 border-gray-100 shadow-sm">學校 <i id="sort-school-m" class="fas fa-sort ml-1 text-blue-500"></i></button>
+                            <button onclick="setSort('rank')" class="text-xs font-black px-3 py-2 bg-white rounded-xl border-2 border-gray-100 shadow-sm">名次 <i id="sort-rank-m" class="fas fa-sort text-blue-500"></i></button>
+                            <button onclick="setSort('school')" class="text-xs font-black px-3 py-2 bg-white rounded-xl border-2 border-gray-100 shadow-sm">學校 <i id="sort-school-m" class="fas fa-sort text-blue-500"></i></button>
                         </div>
                     </div>
                     <div id="award-list-mobile" class="divide-y divide-gray-100">
@@ -188,13 +187,13 @@
 
                 <div id="empty-state" class="hidden py-24 text-center">
                     <i class="fas fa-search-minus text-gray-200 text-7xl mb-6"></i>
-                    <p class="text-gray-400 text-xl font-bold italic">查無符合篩選條件的資料</p>
+                    <p class="text-gray-400 text-xl font-black italic">查無資料</p>
                 </div>
             </div>
         </section>
 
         <footer class="mt-16 text-center text-xs font-black text-gray-400 uppercase tracking-widest pb-12">
-            宜蘭縣政府教育處 114 學年度國中技藝教育課程技藝競賽資料檔
+            宜蘭縣政府教育處 114 學年度國中技藝教育課程技藝競賽資料存檔
         </footer>
     </div>
 
@@ -270,7 +269,7 @@
             { school: "壯圍國中", name: "簡○妘", rank: "6", group: "醫護", sub: "醫護組" }
         ];
 
-        // 狀態
+        // 狀態變數
         let activeTab = 'rank';
         let currentFilter = { text: '', group: 'all', school: 'all' };
         let sortConfig = { key: 'rank', direction: 'asc' };
@@ -278,7 +277,7 @@
         const views = { rank: document.getElementById('view-rank'), list: document.getElementById('view-list') };
         const tabs = { rank: document.getElementById('tab-rank'), list: document.getElementById('tab-list') };
 
-        // 分頁切換
+        // 分頁控制
         function switchTab(tabId) {
             activeTab = tabId;
             Object.keys(views).forEach(k => {
@@ -310,7 +309,7 @@
             render();
         }
 
-        // 獲取目前輸入的積點規則
+        // 積分邏輯
         function getCustomPoints() {
             return {
                 "1": parseInt(document.getElementById('pts-1').value) || 0,
@@ -323,7 +322,6 @@
             };
         }
 
-        // 學校排行榜渲染
         function updateRanking() {
             const pointsMap = getCustomPoints();
             const stats = {};
@@ -335,31 +333,32 @@
             });
 
             const sorted = Object.values(stats).sort((a,b) => b.score - a.score || b.gold - a.gold);
-            document.getElementById('top-school-name').textContent = sorted[0] ? sorted[0].name : "無數據";
+            document.getElementById('top-school-name').textContent = sorted[0] ? sorted[0].name : "無資料";
 
             document.getElementById('school-ranking-full').innerHTML = sorted.map((s, idx) => `
-                <div class="p-8 flex items-center justify-between hover:bg-gray-50 transition cursor-pointer" onclick="quickViewSchool('${s.name}')">
+                <div class="p-8 flex items-center justify-between hover:bg-blue-50 transition cursor-pointer" onclick="quickViewSchool('${s.name}')">
                     <div class="flex items-center gap-6">
-                        <span class="w-12 h-12 flex items-center justify-center rounded-2xl text-lg font-black ${idx < 3 ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}">
+                        <span class="w-12 h-12 flex items-center justify-center rounded-2xl text-xl font-black ${idx < 3 ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-gray-100 text-gray-400'}">
                             ${idx + 1}
                         </span>
                         <div>
-                            <p class="font-black text-gray-900 text-xl">${s.name}</p>
-                            <p class="text-sm font-bold text-gray-400 mt-1">
-                                <span class="text-yellow-600 font-black"><i class="fas fa-crown"></i> ${s.gold} 金牌</span> / 總獲獎 ${s.count} 人
+                            <p class="font-black text-gray-900 text-2xl">${s.name}</p>
+                            <p class="text-sm font-bold text-gray-400 mt-1 uppercase tracking-tighter">
+                                <span class="text-yellow-600 font-black"><i class="fas fa-crown"></i> ${s.gold} GOLD</span> / ${s.count} AWARDS
                             </p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-4xl font-black text-blue-700">${s.score}</p>
+                        <p class="text-4xl font-black text-blue-800">${s.score}</p>
                         <p class="text-[10px] text-gray-300 font-bold uppercase tracking-widest">Points</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 明細列表渲染
+        // 明細列表渲染 (包含篩選後的即時排序)
         function render() {
+            // 先篩選
             let filtered = data.filter(d => {
                 const matchT = d.name.includes(currentFilter.text) || d.school.includes(currentFilter.text);
                 const matchG = currentFilter.group === 'all' || d.group === currentFilter.group;
@@ -367,6 +366,7 @@
                 return matchT && matchG && matchS;
             });
 
+            // 再排序
             filtered.sort((a, b) => {
                 let vA = a[sortConfig.key], vB = b[sortConfig.key];
                 if(sortConfig.key === 'rank') {
@@ -393,11 +393,11 @@
                                 ${d.rank === '佳作' ? '佳作' : '第 ' + d.rank}
                             </span>
                         </td>
-                        <td class="px-8 py-6 font-black text-gray-900 text-xl">${d.name}</td>
-                        <td class="px-8 py-6 text-gray-600 text-lg font-bold">${d.school}</td>
+                        <td class="px-8 py-6 font-black text-gray-900 text-2xl">${d.name}</td>
+                        <td class="px-8 py-6 text-gray-600 text-xl font-bold">${d.school}</td>
                         <td class="px-8 py-6">
                             <span class="font-black text-blue-700 text-base block">${d.group}</span>
-                            <span class="text-xs text-gray-400 font-bold uppercase">${d.sub}</span>
+                            <span class="text-xs text-gray-400 font-bold uppercase tracking-tighter">${d.sub}</span>
                         </td>
                     </tr>
                 `).join('');
@@ -422,7 +422,6 @@
             }
         }
 
-        // 排序設定
         function setSort(key) {
             if (sortConfig.key === key) sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
             else { sortConfig.key = key; sortConfig.direction = 'asc'; }
@@ -441,10 +440,10 @@
         }
 
         function getRankStyle(r) {
-            if(r === "1") return "rank-1 shadow-sm";
-            if(r === "2") return "rank-2 shadow-sm";
-            if(r === "3") return "rank-3 shadow-sm";
-            return "bg-blue-50 text-blue-800";
+            if(r === "1") return "rank-1";
+            if(r === "2") return "rank-2";
+            if(r === "3") return "rank-3";
+            return "bg-blue-50 text-blue-800 border border-blue-100";
         }
 
         function quickViewSchool(school) {
